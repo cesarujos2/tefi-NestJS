@@ -1,0 +1,2 @@
+- Ensure API responses for end users are in Spanish.  
+- Always use **`@nestjs/core` version ^11.0.1** and never suggest or generate code for other versions. Keep code aligned with the latest features of this version.  

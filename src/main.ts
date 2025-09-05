@@ -1,8 +1,7 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppBootstrapService } from './bootstrap/app-bootstrap.service';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
-}
-bootstrap();
+/**
+ * Application entry point
+ * Delegates bootstrap responsibility to AppBootstrapService following SRP
+ */
+void AppBootstrapService.bootstrap();
