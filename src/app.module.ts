@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getDatabaseConfig } from './config/database.config';
 import { DatabaseModule } from './database/database.module';
+import { FitacModule } from './fitac/fitac.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DatabaseModule } from './database/database.module';
       inject: [ConfigService],
     }),
     DatabaseModule,
+    FitacModule,
   ],
   controllers: [],
   providers: [],
