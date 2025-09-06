@@ -110,6 +110,13 @@ export class FitacController {
     enum: ['asc', 'desc'],
     description: 'Sort order',
   })
+  @ApiQuery({
+    name: 'relations',
+    required: false,
+    type: String,
+    description:
+      'Comma-separated list of relations to include (e.g., customFields,projects)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Fitac records found',
@@ -118,8 +125,16 @@ export class FitacController {
   findByStatus(
     @Param('statusId') statusId: string,
     @Query() paginationDto: PaginationDto,
+    @Query('relations') relations?: string,
   ): Promise<PaginatedResponse<Fitac>> {
-    return this.fitacService.findByStatus(statusId, paginationDto);
+    const relationArray = relations
+      ? relations.split(',').map((r) => r.trim())
+      : undefined;
+    return this.fitacService.findByStatus(
+      statusId,
+      paginationDto,
+      relationArray,
+    );
   }
 
   @Get('assigned/:userId')
@@ -157,6 +172,13 @@ export class FitacController {
     enum: ['asc', 'desc'],
     description: 'Sort order',
   })
+  @ApiQuery({
+    name: 'relations',
+    required: false,
+    type: String,
+    description:
+      'Comma-separated list of relations to include (e.g., customFields,projects)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Fitac records found',
@@ -165,8 +187,16 @@ export class FitacController {
   findByAssignedUser(
     @Param('userId') userId: string,
     @Query() paginationDto: PaginationDto,
+    @Query('relations') relations?: string,
   ): Promise<PaginatedResponse<Fitac>> {
-    return this.fitacService.findByAssignedUser(userId, paginationDto);
+    const relationArray = relations
+      ? relations.split(',').map((r) => r.trim())
+      : undefined;
+    return this.fitacService.findByAssignedUser(
+      userId,
+      paginationDto,
+      relationArray,
+    );
   }
 
   @Get('/document-name/:documentName')
@@ -179,13 +209,29 @@ export class FitacController {
     description: 'Document name to search for',
     type: 'string',
   })
+  @ApiQuery({
+    name: 'relations',
+    required: false,
+    type: String,
+    description:
+      'Comma-separated list of relations to include (e.g., customFields,projects)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Fitac records found',
     type: Fitac,
   })
-  findByDocumentName(@Param('documentName') documentName: string) {
-    return this.fitacService.findByDocumentName(documentName.trim());
+  findByDocumentName(
+    @Param('documentName') documentName: string,
+    @Query('relations') relations?: string,
+  ) {
+    const relationArray = relations
+      ? relations.split(',').map((r) => r.trim())
+      : undefined;
+    return this.fitacService.findByDocumentName(
+      documentName.trim(),
+      relationArray,
+    );
   }
 
   @Get(':id')

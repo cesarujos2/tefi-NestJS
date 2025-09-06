@@ -69,6 +69,7 @@ export class ProjectService {
   async findByAssignedUser(
     userId: string,
     paginationDto: PaginationDto,
+    relations?: string[],
   ): Promise<PaginatedResponse<Project>> {
     const {
       page = 1,
@@ -80,11 +81,10 @@ export class ProjectService {
 
     const [data, total] = await this.projectRepository.findAndCount({
       where: { assignedUserId: userId, deleted: 0 },
+      relations,
+      order: { [sortBy]: sortOrder.toUpperCase() },
       skip,
       take: limit,
-      order: {
-        [sortBy]: sortOrder.toUpperCase() as 'ASC' | 'DESC',
-      },
     });
 
     const totalPages = Math.ceil(total / limit);
@@ -105,6 +105,7 @@ export class ProjectService {
   async findByName(
     name: string,
     paginationDto: PaginationDto,
+    relations?: string[],
   ): Promise<PaginatedResponse<Project>> {
     const {
       page = 1,
@@ -119,6 +120,7 @@ export class ProjectService {
         deleted: 0,
         documentName: Like(`%${name}%`),
       },
+      relations,
       skip,
       take: limit,
       order: {

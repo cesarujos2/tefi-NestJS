@@ -63,6 +63,7 @@ export class FitacService {
   async findByStatus(
     statusId: string,
     paginationDto: PaginationDto,
+    relations?: string[],
   ): Promise<PaginatedResponse<Fitac>> {
     const {
       page = 1,
@@ -78,7 +79,7 @@ export class FitacService {
         statusId,
         deleted: false,
       },
-      relations: ['customFields'],
+      relations: [...this.defaultRelations, ...(relations || [])],
       order: { [sortBy]: sortOrder.toUpperCase() },
       skip,
       take: actualLimit,
@@ -97,13 +98,16 @@ export class FitacService {
     };
   }
 
-  async findByDocumentName(documentName: string): Promise<Fitac> {
+  async findByDocumentName(
+    documentName: string,
+    relations?: string[],
+  ): Promise<Fitac> {
     const fitac = await this.fitacRepository.findOne({
       where: {
         documentName,
         deleted: false,
       },
-      relations: ['customFields'],
+      relations: [...this.defaultRelations, ...(relations || [])],
     });
 
     if (!fitac) {
@@ -111,12 +115,14 @@ export class FitacService {
         `Fitac con nombre de documento ${documentName} no encontrado`,
       );
     }
+
     return fitac;
   }
 
   async findByAssignedUser(
     assignedUserId: string,
     paginationDto: PaginationDto,
+    relations?: string[],
   ): Promise<PaginatedResponse<Fitac>> {
     const {
       page = 1,
@@ -126,13 +132,14 @@ export class FitacService {
     } = paginationDto;
     const actualLimit = Math.min(limit, 100);
     const skip = (page - 1) * actualLimit;
+    const finalRelations = relations || this.defaultRelations;
 
     const [data, total] = await this.fitacRepository.findAndCount({
       where: {
         assignedUserId,
         deleted: false,
       },
-      relations: ['customFields'],
+      relations: finalRelations,
       order: { [sortBy]: sortOrder.toUpperCase() },
       skip,
       take: actualLimit,

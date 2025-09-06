@@ -48,6 +48,12 @@ export class ProjectController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'sortBy', required: false, type: String })
   @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'] })
+  @ApiQuery({
+    name: 'relations',
+    required: false,
+    type: String,
+    description: 'Comma-separated list of relations to include (e.g., fitacs)',
+  })
   @ApiResponse({
     status: 200,
     description: 'User projects list retrieved successfully',
@@ -55,8 +61,16 @@ export class ProjectController {
   findByAssignedUser(
     @Param('userId') userId: string,
     @Query() paginationDto: PaginationDto,
+    @Query('relations') relations?: string,
   ): Promise<PaginatedResponse<Project>> {
-    return this.projectService.findByAssignedUser(userId, paginationDto);
+    const relationArray = relations
+      ? relations.split(',').map((r) => r.trim())
+      : undefined;
+    return this.projectService.findByAssignedUser(
+      userId,
+      paginationDto,
+      relationArray,
+    );
   }
 
   @Get('search/:name')
@@ -66,6 +80,12 @@ export class ProjectController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'sortBy', required: false, type: String })
   @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'] })
+  @ApiQuery({
+    name: 'relations',
+    required: false,
+    type: String,
+    description: 'Comma-separated list of relations to include (e.g., fitacs)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Projects found successfully',
@@ -73,8 +93,12 @@ export class ProjectController {
   findByName(
     @Param('name') name: string,
     @Query() paginationDto: PaginationDto,
+    @Query('relations') relations?: string,
   ): Promise<PaginatedResponse<Project>> {
-    return this.projectService.findByName(name, paginationDto);
+    const relationArray = relations
+      ? relations.split(',').map((r) => r.trim())
+      : undefined;
+    return this.projectService.findByName(name, paginationDto, relationArray);
   }
 
   @Get(':id')
