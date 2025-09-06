@@ -8,6 +8,7 @@ import { FitacModule } from './features/fitac/fitac.module';
 import { ProjectModule } from './features/project/project.module';
 import { AccountModule } from './features/account/account.module';
 import { AuthModule } from './features/auth/auth.module';
+import { ContactModule } from './features/contact/contact.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AuthModule } from './features/auth/auth.module';
     ProjectModule,
     AccountModule,
     AuthModule,
+    ContactModule,
   ],
   controllers: [],
   providers: [],
