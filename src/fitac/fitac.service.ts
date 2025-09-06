@@ -6,6 +6,8 @@ import { PaginationDto, PaginatedResponse } from './dto/pagination.dto';
 
 @Injectable()
 export class FitacService {
+  private defaultRelations = ['customFields'];
+
   constructor(
     @InjectRepository(Fitac)
     private readonly fitacRepository: Repository<Fitac>,
@@ -13,6 +15,7 @@ export class FitacService {
 
   async findAll(
     paginationDto: PaginationDto,
+    relations?: string[],
   ): Promise<PaginatedResponse<Fitac>> {
     const {
       page = 1,
@@ -25,7 +28,7 @@ export class FitacService {
 
     const [data, total] = await this.fitacRepository.findAndCount({
       where: { deleted: false },
-      relations: ['customFields'],
+      relations: [...this.defaultRelations, ...(relations || [])],
       order: { [sortBy]: sortOrder.toUpperCase() },
       skip,
       take: actualLimit,
@@ -44,10 +47,10 @@ export class FitacService {
     };
   }
 
-  async findOne(id: number): Promise<Fitac> {
+  async findOne(id: number, relations?: string[]): Promise<Fitac> {
     const fitac = await this.fitacRepository.findOne({
       where: { id, deleted: false },
-      relations: ['customFields'],
+      relations: [...this.defaultRelations, ...(relations || [])],
     });
 
     if (!fitac) {
@@ -55,10 +58,6 @@ export class FitacService {
     }
 
     return fitac;
-  }
-
-  async remove(id: number): Promise<void> {
-    await this.fitacRepository.update(id, { deleted: true });
   }
 
   async findByStatus(
@@ -79,7 +78,7 @@ export class FitacService {
         statusId,
         deleted: false,
       },
-      relations: ['customFields', 'proyectoFitacs'],
+      relations: ['customFields'],
       order: { [sortBy]: sortOrder.toUpperCase() },
       skip,
       take: actualLimit,
@@ -104,7 +103,7 @@ export class FitacService {
         documentName,
         deleted: false,
       },
-      relations: ['customFields', 'proyectoFitacs'],
+      relations: ['customFields'],
     });
 
     if (!fitac) {
@@ -133,52 +132,12 @@ export class FitacService {
         assignedUserId,
         deleted: false,
       },
-      relations: ['customFields', 'proyectoFitacs'],
+      relations: ['customFields'],
       order: { [sortBy]: sortOrder.toUpperCase() },
       skip,
       take: actualLimit,
     });
 
-    const totalPages = Math.ceil(total / actualLimit);
-
-    return {
-      data,
-      total,
-      page,
-      limit: actualLimit,
-      totalPages,
-      hasNext: page < totalPages,
-      hasPrev: page > 1,
-    };
-  }
-
-  async search(
-    term: string,
-    paginationDto: PaginationDto,
-  ): Promise<PaginatedResponse<Fitac>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'dateEntered',
-      sortOrder = 'desc',
-    } = paginationDto;
-    const actualLimit = Math.min(limit, 100);
-    const skip = (page - 1) * actualLimit;
-
-    const queryBuilder = this.fitacRepository
-      .createQueryBuilder('fitac')
-      .leftJoinAndSelect('fitac.customFields', 'customFields')
-      .leftJoinAndSelect('fitac.proyectoFitacs', 'proyectoFitacs')
-      .where('fitac.deleted = :deleted', { deleted: false })
-      .andWhere(
-        '(fitac.firstName LIKE :term OR fitac.lastName LIKE :term OR fitac.description LIKE :term)',
-        { term: `%${term}%` },
-      )
-      .orderBy(`fitac.${sortBy}`, sortOrder.toUpperCase() as 'ASC' | 'DESC')
-      .skip(skip)
-      .take(actualLimit);
-
-    const [data, total] = await queryBuilder.getManyAndCount();
     const totalPages = Math.ceil(total / actualLimit);
 
     return {

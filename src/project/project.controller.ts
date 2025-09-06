@@ -6,14 +6,14 @@ import {
   ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
-import { ProyectoService } from './proyecto.service';
+import { ProjectService } from './project.service';
 import { PaginationDto, PaginatedResponse } from './dto/pagination.dto';
-import { Proyecto } from './entities/proyecto.entity';
+import { Project } from './entities/project.entity';
 
-@ApiTags('projects')
-@Controller('proyecto')
-export class ProyectoController {
-  constructor(private readonly proyectoService: ProyectoService) {}
+@ApiTags('project')
+@Controller('project')
+export class ProjectController {
+  constructor(private readonly projectService: ProjectService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all projects with pagination' })
@@ -21,14 +21,24 @@ export class ProyectoController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'sortBy', required: false, type: String })
   @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'] })
+  @ApiQuery({
+    name: 'relations',
+    required: false,
+    type: String,
+    description: 'Comma-separated list of relations to include (e.g., fitacs)',
+  })
   @ApiResponse({
     status: 200,
     description: 'List of projects retrieved successfully',
   })
   findAll(
     @Query() paginationDto: PaginationDto,
-  ): Promise<PaginatedResponse<Proyecto>> {
-    return this.proyectoService.findAll(paginationDto);
+    @Query('relations') relations?: string,
+  ): Promise<PaginatedResponse<Project>> {
+    const relationArray = relations
+      ? relations.split(',').map((r) => r.trim())
+      : undefined;
+    return this.projectService.findAll(paginationDto, relationArray);
   }
 
   @Get('assigned/:userId')
@@ -45,8 +55,8 @@ export class ProyectoController {
   findByAssignedUser(
     @Param('userId') userId: string,
     @Query() paginationDto: PaginationDto,
-  ): Promise<PaginatedResponse<Proyecto>> {
-    return this.proyectoService.findByAssignedUser(userId, paginationDto);
+  ): Promise<PaginatedResponse<Project>> {
+    return this.projectService.findByAssignedUser(userId, paginationDto);
   }
 
   @Get('search/:name')
@@ -63,20 +73,32 @@ export class ProyectoController {
   findByName(
     @Param('name') name: string,
     @Query() paginationDto: PaginationDto,
-  ): Promise<PaginatedResponse<Proyecto>> {
-    return this.proyectoService.findByName(name.trim(), paginationDto);
+  ): Promise<PaginatedResponse<Project>> {
+    return this.projectService.findByName(name, paginationDto);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a project by ID' })
   @ApiParam({ name: 'id', description: 'Project ID' })
+  @ApiQuery({
+    name: 'relations',
+    required: false,
+    type: String,
+    description: 'Comma-separated list of relations to include (e.g., fitacs)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Project retrieved successfully',
-    type: Proyecto,
+    type: Project,
   })
   @ApiResponse({ status: 404, description: 'Project not found' })
-  findOne(@Param('id') id: string): Promise<Proyecto> {
-    return this.proyectoService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @Query('relations') relations?: string,
+  ): Promise<Project> {
+    const relationArray = relations
+      ? relations.split(',').map((r) => r.trim())
+      : undefined;
+    return this.projectService.findOne(id, relationArray);
   }
 }

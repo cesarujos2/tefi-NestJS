@@ -1,7 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
+import { Fitac } from '../../fitac/entities/fitac.entity';
 
 @Entity({ name: 'proy_proyectostele' })
-export class Proyecto {
+export class Project {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -243,4 +250,18 @@ export class Proyecto {
     nullable: true,
   })
   longitude: number;
+
+  @ManyToMany(() => Fitac)
+  @JoinTable({
+    name: 'fitac_fitac_proy_proyectostele_c',
+    joinColumn: {
+      name: 'fitac_fitac_proy_proyectosteleproy_proyectostele_ida',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'fitac_fitac_proy_proyectostelefitac_fitac_idb',
+      referencedColumnName: 'id',
+    },
+  })
+  fitacs: Fitac[];
 }

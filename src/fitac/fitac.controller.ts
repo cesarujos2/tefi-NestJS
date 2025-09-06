@@ -50,6 +50,17 @@ export class FitacController {
     enum: ['asc', 'desc'],
     description: 'Sort order',
   })
+  @ApiQuery({
+    name: 'relations',
+    required: false,
+    type: String,
+    description:
+      'Comma-separated list of relations to include (e.g., customFields,proyectos)',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid pagination parameters',
+  })
   @ApiResponse({
     status: 200,
     description: 'Fitac records retrieved successfully',
@@ -57,8 +68,12 @@ export class FitacController {
   })
   findAll(
     @Query() paginationDto: PaginationDto,
+    @Query('relations') relations?: string,
   ): Promise<PaginatedResponse<Fitac>> {
-    return this.fitacService.findAll(paginationDto);
+    const relationArray = relations
+      ? relations.split(',').map((r) => r.trim())
+      : undefined;
+    return this.fitacService.findAll(paginationDto, relationArray);
   }
 
   @Get('status/:statusId')
@@ -183,6 +198,13 @@ export class FitacController {
     description: 'Fitac record ID',
     type: 'string',
   })
+  @ApiQuery({
+    name: 'relations',
+    required: false,
+    type: String,
+    description:
+      'Comma-separated list of relations to include (e.g., customFields,projects)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Fitac record found',
@@ -192,11 +214,17 @@ export class FitacController {
     status: 404,
     description: 'Fitac record not found',
   })
-  findOne(@Param('id') id: string): Promise<Fitac> {
+  findOne(
+    @Param('id') id: string,
+    @Query('relations') relations?: string,
+  ): Promise<Fitac> {
     const numericId = parseInt(id, 10);
     if (isNaN(numericId)) {
       throw new BadRequestException('ID debe ser un número válido');
     }
-    return this.fitacService.findOne(numericId);
+    const relationArray = relations
+      ? relations.split(',').map((r) => r.trim())
+      : undefined;
+    return this.fitacService.findOne(numericId, relationArray);
   }
 }

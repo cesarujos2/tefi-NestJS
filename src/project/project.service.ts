@@ -1,19 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
-import { Proyecto } from './entities/proyecto.entity';
+import { Like, Repository, FindManyOptions } from 'typeorm';
+import { Project } from './entities/project.entity';
 import { PaginationDto, PaginatedResponse } from './dto/pagination.dto';
 
 @Injectable()
-export class ProyectoService {
+export class ProjectService {
   constructor(
-    @InjectRepository(Proyecto)
-    private readonly proyectoRepository: Repository<Proyecto>,
+    @InjectRepository(Project)
+    private readonly projectRepository: Repository<Project>,
   ) {}
 
   async findAll(
     paginationDto: PaginationDto,
-  ): Promise<PaginatedResponse<Proyecto>> {
+    relations?: string[],
+  ): Promise<PaginatedResponse<Project>> {
     const {
       page = 1,
       limit = 10,
@@ -22,14 +23,18 @@ export class ProyectoService {
     } = paginationDto;
     const skip = (page - 1) * limit;
 
-    const [data, total] = await this.proyectoRepository.findAndCount({
+    const queryOptions: FindManyOptions<Project> = {
       where: { deleted: 0 },
+      relations,
       skip,
       take: limit,
       order: {
         [sortBy]: sortOrder.toUpperCase() as 'ASC' | 'DESC',
       },
-    });
+    };
+
+    const [data, total] =
+      await this.projectRepository.findAndCount(queryOptions);
 
     const totalPages = Math.ceil(total / limit);
     const hasNext = page < totalPages;
@@ -46,22 +51,25 @@ export class ProyectoService {
     };
   }
 
-  async findOne(id: string): Promise<Proyecto> {
-    const proyecto = await this.proyectoRepository.findOne({
+  async findOne(id: string, relations?: string[]): Promise<Project> {
+    const queryOptions: FindManyOptions<Project> = {
+      relations,
       where: { id, deleted: 0 },
-    });
+    };
 
-    if (!proyecto) {
+    const project = await this.projectRepository.findOne(queryOptions);
+
+    if (!project) {
       throw new NotFoundException(`Proyecto con ID ${id} no encontrado`);
     }
 
-    return proyecto;
+    return project;
   }
 
   async findByAssignedUser(
     userId: string,
     paginationDto: PaginationDto,
-  ): Promise<PaginatedResponse<Proyecto>> {
+  ): Promise<PaginatedResponse<Project>> {
     const {
       page = 1,
       limit = 10,
@@ -70,7 +78,7 @@ export class ProyectoService {
     } = paginationDto;
     const skip = (page - 1) * limit;
 
-    const [data, total] = await this.proyectoRepository.findAndCount({
+    const [data, total] = await this.projectRepository.findAndCount({
       where: { assignedUserId: userId, deleted: 0 },
       skip,
       take: limit,
@@ -97,7 +105,7 @@ export class ProyectoService {
   async findByName(
     name: string,
     paginationDto: PaginationDto,
-  ): Promise<PaginatedResponse<Proyecto>> {
+  ): Promise<PaginatedResponse<Project>> {
     const {
       page = 1,
       limit = 10,
@@ -106,7 +114,7 @@ export class ProyectoService {
     } = paginationDto;
     const skip = (page - 1) * limit;
 
-    const [data, total] = await this.proyectoRepository.findAndCount({
+    const [data, total] = await this.projectRepository.findAndCount({
       where: {
         deleted: 0,
         documentName: Like(`%${name}%`),

@@ -5,9 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { FitacCustom } from './fitac-custom.entity';
+import { Project } from '../../project/entities/project.entity';
 
 @Entity('fitac_fitac')
 export class Fitac {
@@ -222,4 +225,19 @@ export class Fitac {
   // Relación 1:1 con FitacCustom
   @OneToOne(() => FitacCustom, (fitacCustom) => fitacCustom.fitac)
   customFields: FitacCustom;
+
+  @ApiProperty({ description: 'Proyectos asociados' })
+  @ManyToMany(() => Project)
+  @JoinTable({
+    name: 'fitac_fitac_proy_proyectostele_c',
+    joinColumn: {
+      name: 'fitac_fitac_proy_proyectostelefitac_fitac_idb',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'fitac_fitac_proy_proyectosteleproy_proyectostele_ida',
+      referencedColumnName: 'id',
+    },
+  })
+  projects: Project[];
 }

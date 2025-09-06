@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getDatabaseConfig } from './config/database.config';
 import { DatabaseModule } from './database/database.module';
 import { FitacModule } from './fitac/fitac.module';
-import { ProyectoModule } from './proyecto/proyecto.module';
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { ProyectoModule } from './proyecto/proyecto.module';
     }),
     DatabaseModule,
     FitacModule,
-    ProyectoModule,
+    ProjectModule,
   ],
   controllers: [],
   providers: [],
