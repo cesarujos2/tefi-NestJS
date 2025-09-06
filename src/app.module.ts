@@ -5,6 +5,7 @@ import { getDatabaseConfig } from './config/database.config';
 import { DatabaseModule } from './database/database.module';
 import { FitacModule } from './fitac/fitac.module';
 import { ProjectModule } from './project/project.module';
+import { AccountModule } from './account/account.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProjectModule } from './project/project.module';
     DatabaseModule,
     FitacModule,
     ProjectModule,
+    AccountModule,
   ],
   controllers: [],
   providers: [],

@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Fitac } from '../../fitac/entities/fitac.entity';
 import { ProjectCustom } from './project-custom.entity';
+import { Account } from '../../account/entities/account.entity';
 
 @Entity({ name: 'proy_proyectostele' })
 export class Project {
@@ -269,4 +270,7 @@ export class Project {
 
   @OneToOne(() => ProjectCustom, (customFields) => customFields.project)
   customFields: ProjectCustom;
+
+  @ManyToMany(() => Account, (account) => account.projects)
+  accounts: Account[];
 }
