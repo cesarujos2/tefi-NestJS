@@ -4,8 +4,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { FitacCustom } from './fitac-custom.entity';
 
 @Entity('fitac_fitac')
 export class Fitac {
@@ -216,4 +218,8 @@ export class Fitac {
   @ApiProperty({ description: 'Foto montaje' })
   @Column({ name: 'foto_montaje', nullable: true })
   fotoMontaje: string;
+
+  // Relación 1:1 con FitacCustom
+  @OneToOne(() => FitacCustom, (fitacCustom) => fitacCustom.fitac)
+  customFields: FitacCustom;
 }
