@@ -11,6 +11,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { FitacCustom } from './fitac-custom.entity';
 import { Project } from '@features/project/entities/project.entity';
+import { Contact } from '@features/contact/entities/contact.entity';
 
 @Entity('fitac_fitac')
 export class Fitac {
@@ -240,4 +241,19 @@ export class Fitac {
     },
   })
   projects: Project[];
+
+  @ApiProperty({ description: 'Contactos asociados' })
+  @ManyToMany(() => Contact, (contact) => contact.fitacs)
+  @JoinTable({
+    name: 'fitac_fitac_contacts_c',
+    joinColumn: {
+      name: 'fitac_fitac_contactsfitac_fitac_idb',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'fitac_fitac_contactscontacts_ida',
+      referencedColumnName: 'id',
+    },
+  })
+  contacts: Contact[];
 }

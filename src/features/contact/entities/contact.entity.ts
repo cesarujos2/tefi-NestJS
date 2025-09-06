@@ -6,8 +6,11 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
+  ManyToMany,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 import { ContactCustom } from './contact-custom.entity';
+import { Fitac } from '@features/fitac/entities/fitac.entity';
 
 /**
  * Contact entity representing the contacts table
@@ -263,6 +266,10 @@ export class Contact {
   })
   @JoinColumn({ name: 'id' })
   custom: ContactCustom;
+
+  @ApiProperty({ description: 'Fitacs asociados' })
+  @ManyToMany(() => Fitac, (fitac) => fitac.contacts)
+  fitacs: Fitac[];
 
   // Computed property for full name
   get fullName(): string {
