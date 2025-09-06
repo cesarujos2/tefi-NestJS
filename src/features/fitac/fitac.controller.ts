@@ -4,6 +4,7 @@ import {
   Param,
   Query,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { FitacService } from './fitac.service';
 import { Fitac } from './entities/fitac.entity';
@@ -14,10 +15,14 @@ import {
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('fitac')
 @Controller('fitac')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('JWT-auth')
 export class FitacController {
   constructor(private readonly fitacService: FitacService) {}
 

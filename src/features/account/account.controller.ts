@@ -1,17 +1,21 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AccountService } from './account.service';
 import { PaginationDto, PaginatedResponse } from './dto/pagination.dto';
 import { Account } from './entities/account.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('account')
 @Controller('account')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('JWT-auth')
 export class AccountController {
   constructor(private readonly accountsService: AccountService) {}
 

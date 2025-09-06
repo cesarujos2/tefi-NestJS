@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getDatabaseConfig } from './core/config/database.config';
+import { getSqliteConfig } from './core/config/sqlite.config';
 import { DatabaseModule } from './core/database/database.module';
 import { FitacModule } from './features/fitac/fitac.module';
 import { ProjectModule } from './features/project/project.module';
 import { AccountModule } from './features/account/account.module';
+import { AuthModule } from './features/auth/auth.module';
 
 @Module({
   imports: [
@@ -18,10 +20,17 @@ import { AccountModule } from './features/account/account.module';
       useFactory: getDatabaseConfig,
       inject: [ConfigService],
     }),
+    TypeOrmModule.forRootAsync({
+      name: 'sqlite',
+      imports: [ConfigModule],
+      useFactory: getSqliteConfig,
+      inject: [ConfigService],
+    }),
     DatabaseModule,
     FitacModule,
     ProjectModule,
     AccountModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
