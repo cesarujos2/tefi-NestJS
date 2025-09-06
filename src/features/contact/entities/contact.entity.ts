@@ -11,6 +11,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { ContactCustom } from './contact-custom.entity';
 import { Fitac } from '@features/fitac/entities/fitac.entity';
+import { EmailAddress } from '@features/email_address/entities/email-address.entity';
 
 /**
  * Contact entity representing the contacts table
@@ -270,6 +271,10 @@ export class Contact {
   @ApiProperty({ description: 'Fitacs asociados' })
   @ManyToMany(() => Fitac, (fitac) => fitac.contacts)
   fitacs: Fitac[];
+
+  @ApiProperty({ description: 'Email addresses asociados' })
+  @ManyToMany(() => EmailAddress, (emailAddress) => emailAddress.contacts)
+  emailAddresses: EmailAddress[];
 
   // Computed property for full name
   get fullName(): string {

@@ -5,6 +5,7 @@ import { ContactService } from './contact.service';
 import { Contact } from './entities/contact.entity';
 import { ContactCustom } from './entities/contact-custom.entity';
 import { Fitac } from '@features/fitac/entities/fitac.entity';
+import { EmailAddress } from '@features/email_address/entities/email-address.entity';
 
 /**
  * Contact module following Single Responsibility Principle
@@ -12,7 +13,7 @@ import { Fitac } from '@features/fitac/entities/fitac.entity';
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Contact, ContactCustom, Fitac]), // MySQL connection
+    TypeOrmModule.forFeature([Contact, ContactCustom, Fitac, EmailAddress]), // MySQL connection
   ],
   controllers: [ContactController],
   providers: [ContactService],

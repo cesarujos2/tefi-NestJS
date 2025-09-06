@@ -9,6 +9,7 @@ import { ProjectModule } from './features/project/project.module';
 import { AccountModule } from './features/account/account.module';
 import { AuthModule } from './features/auth/auth.module';
 import { ContactModule } from './features/contact/contact.module';
+import { EmailAddressModule } from './features/email_address/email-address.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ContactModule } from './features/contact/contact.module';
     AccountModule,
     AuthModule,
     ContactModule,
+    EmailAddressModule,
   ],
   controllers: [],
   providers: [],
