@@ -4,8 +4,10 @@ import {
   Column,
   ManyToMany,
   JoinTable,
+  OneToOne,
 } from 'typeorm';
 import { Fitac } from '../../fitac/entities/fitac.entity';
+import { ProjectCustom } from './project-custom.entity';
 
 @Entity({ name: 'proy_proyectostele' })
 export class Project {
@@ -264,4 +266,7 @@ export class Project {
     },
   })
   fitacs: Fitac[];
+
+  @OneToOne(() => ProjectCustom, (customFields) => customFields.project)
+  customFields: ProjectCustom;
 }

@@ -6,6 +6,8 @@ import { PaginationDto, PaginatedResponse } from './dto/pagination.dto';
 
 @Injectable()
 export class ProjectService {
+  private defaultRelations = ['customFields'];
+
   constructor(
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
@@ -25,7 +27,7 @@ export class ProjectService {
 
     const queryOptions: FindManyOptions<Project> = {
       where: { deleted: 0 },
-      relations,
+      relations: [...this.defaultRelations, ...(relations || [])],
       skip,
       take: limit,
       order: {
@@ -53,7 +55,7 @@ export class ProjectService {
 
   async findOne(id: string, relations?: string[]): Promise<Project> {
     const queryOptions: FindManyOptions<Project> = {
-      relations,
+      relations: [...this.defaultRelations, ...(relations || [])],
       where: { id, deleted: 0 },
     };
 
@@ -81,7 +83,7 @@ export class ProjectService {
 
     const [data, total] = await this.projectRepository.findAndCount({
       where: { assignedUserId: userId, deleted: 0 },
-      relations,
+      relations: [...this.defaultRelations, ...(relations || [])],
       order: { [sortBy]: sortOrder.toUpperCase() },
       skip,
       take: limit,
@@ -120,7 +122,7 @@ export class ProjectService {
         deleted: 0,
         documentName: Like(`%${name}%`),
       },
-      relations,
+      relations: [...this.defaultRelations, ...(relations || [])],
       skip,
       take: limit,
       order: {
