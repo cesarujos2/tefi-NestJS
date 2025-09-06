@@ -6,8 +6,6 @@ import { PaginationDto, PaginatedResponse } from './dto/pagination.dto';
 
 @Injectable()
 export class AccountService {
-  private defaultRelations = ['customFields'];
-
   constructor(
     @InjectRepository(Account)
     private accountRepository: Repository<Account>,
@@ -25,13 +23,9 @@ export class AccountService {
     } = paginationDto;
     const skip = (page - 1) * limit;
 
-    const finalRelations = relations
-      ? [...this.defaultRelations, ...relations]
-      : this.defaultRelations;
-
     const [accounts, total] = await this.accountRepository.findAndCount({
       where: { deleted: false },
-      relations: finalRelations,
+      relations,
       order: { [sortBy]: sortOrder.toUpperCase() as 'ASC' | 'DESC' },
       skip,
       take: limit,
@@ -49,13 +43,9 @@ export class AccountService {
   }
 
   async findOne(id: string, relations?: string[]): Promise<Account> {
-    const finalRelations = relations
-      ? [...this.defaultRelations, ...relations]
-      : this.defaultRelations;
-
     const account = await this.accountRepository.findOne({
       where: { id, deleted: false },
-      relations: finalRelations,
+      relations,
     });
 
     if (!account) {
@@ -78,16 +68,12 @@ export class AccountService {
     } = paginationDto;
     const skip = (page - 1) * limit;
 
-    const finalRelations = relations
-      ? [...this.defaultRelations, ...relations]
-      : this.defaultRelations;
-
     const [accounts, total] = await this.accountRepository.findAndCount({
       where: {
         assignedUserId: userId,
         deleted: false,
       },
-      relations: finalRelations,
+      relations,
       order: { [sortBy]: sortOrder.toUpperCase() as 'ASC' | 'DESC' },
       skip,
       take: limit,
@@ -117,16 +103,12 @@ export class AccountService {
     } = paginationDto;
     const skip = (page - 1) * limit;
 
-    const finalRelations = relations
-      ? [...this.defaultRelations, ...relations]
-      : this.defaultRelations;
-
     const [accounts, total] = await this.accountRepository.findAndCount({
       where: {
         name: Like(`%${name}%`),
         deleted: false,
       },
-      relations: finalRelations,
+      relations,
       order: { [sortBy]: sortOrder.toUpperCase() as 'ASC' | 'DESC' },
       skip,
       take: limit,

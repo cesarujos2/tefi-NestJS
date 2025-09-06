@@ -262,7 +262,7 @@ export class Contact {
     eager: false,
   })
   @JoinColumn({ name: 'id' })
-  customFields?: ContactCustom;
+  custom: ContactCustom;
 
   // Computed property for full name
   get fullName(): string {

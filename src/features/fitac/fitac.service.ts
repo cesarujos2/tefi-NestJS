@@ -6,8 +6,6 @@ import { PaginationDto, PaginatedResponse } from './dto/pagination.dto';
 
 @Injectable()
 export class FitacService {
-  private defaultRelations = ['customFields'];
-
   constructor(
     @InjectRepository(Fitac)
     private readonly fitacRepository: Repository<Fitac>,
@@ -28,7 +26,7 @@ export class FitacService {
 
     const [data, total] = await this.fitacRepository.findAndCount({
       where: { deleted: false },
-      relations: [...this.defaultRelations, ...(relations || [])],
+      relations,
       order: { [sortBy]: sortOrder.toUpperCase() },
       skip,
       take: actualLimit,
@@ -50,7 +48,7 @@ export class FitacService {
   async findOne(id: number, relations?: string[]): Promise<Fitac> {
     const fitac = await this.fitacRepository.findOne({
       where: { id, deleted: false },
-      relations: [...this.defaultRelations, ...(relations || [])],
+      relations,
     });
 
     if (!fitac) {
@@ -79,7 +77,7 @@ export class FitacService {
         statusId,
         deleted: false,
       },
-      relations: [...this.defaultRelations, ...(relations || [])],
+      relations,
       order: { [sortBy]: sortOrder.toUpperCase() },
       skip,
       take: actualLimit,
@@ -107,7 +105,7 @@ export class FitacService {
         documentName,
         deleted: false,
       },
-      relations: [...this.defaultRelations, ...(relations || [])],
+      relations,
     });
 
     if (!fitac) {
@@ -132,14 +130,13 @@ export class FitacService {
     } = paginationDto;
     const actualLimit = Math.min(limit, 100);
     const skip = (page - 1) * actualLimit;
-    const finalRelations = relations || this.defaultRelations;
 
     const [data, total] = await this.fitacRepository.findAndCount({
       where: {
         assignedUserId,
         deleted: false,
       },
-      relations: finalRelations,
+      relations,
       order: { [sortBy]: sortOrder.toUpperCase() },
       skip,
       take: actualLimit,

@@ -131,7 +131,7 @@ export class ContactCustom {
   poderesZonaRegistralC: string;
 
   // Relationship with main contact entity
-  @OneToOne(() => Contact, (contact) => contact.customFields)
+  @OneToOne(() => Contact, (contact) => contact.custom)
   @JoinColumn({ name: 'id_c' })
   contact: Contact;
 }

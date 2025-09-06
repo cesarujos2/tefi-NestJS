@@ -224,7 +224,7 @@ export class Fitac {
 
   // Relación 1:1 con FitacCustom
   @OneToOne(() => FitacCustom, (fitacCustom) => fitacCustom.fitac)
-  customFields: FitacCustom;
+  custom: FitacCustom;
 
   @ApiProperty({ description: 'Proyectos asociados' })
   @ManyToMany(() => Project)

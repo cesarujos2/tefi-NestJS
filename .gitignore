@@ -54,3 +54,63 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# TypeScript
+*.tsbuildinfo
+*.d.ts.map
+
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettiercache
+
+# Package manager lock files (keep only one)
+# yarn.lock
+# pnpm-lock.yaml
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+/data
+/data/*.db
+/data/*.sqlite
+
+# Cache directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+
+# Editor directories and files
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Docker
+Dockerfile.prod
+docker-compose.override.yml
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Application specific
+/uploads
+/public/uploads
+/storage
+/tmp

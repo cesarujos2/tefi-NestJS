@@ -235,7 +235,7 @@ export class Account {
   @OneToOne(() => AccountCustom, (accountCustom) => accountCustom.account, {
     cascade: true,
   })
-  customFields: AccountCustom;
+  custom: AccountCustom;
 
   @ApiProperty({
     description: 'Projects associated with this account',

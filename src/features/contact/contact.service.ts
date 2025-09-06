@@ -10,8 +10,6 @@ import { PaginationDto, PaginatedResponse } from '@shared/dto/pagination.dto';
  */
 @Injectable()
 export class ContactService {
-  private defaultRelations = ['customFields'];
-
   constructor(
     @InjectRepository(Contact)
     private readonly contactRepository: Repository<Contact>,
@@ -34,14 +32,11 @@ export class ContactService {
 
     const findOptions: FindManyOptions<Contact> = {
       where: { deleted: false },
+      relations,
       skip,
       take: limit,
       order: { [sortBy]: sortOrder.toUpperCase() as 'ASC' | 'DESC' },
     };
-
-    if (relations && relations.length > 0) {
-      findOptions.relations = this.getContactRelations(relations);
-    }
 
     const [contacts, total] =
       await this.contactRepository.findAndCount(findOptions);
@@ -82,14 +77,11 @@ export class ContactService {
         assignedUserId,
         deleted: false,
       },
+      relations,
       skip,
       take: limit,
       order: { [sortBy]: sortOrder.toUpperCase() as 'ASC' | 'DESC' },
     };
-
-    if (relations && relations.length > 0) {
-      findOptions.relations = this.getContactRelations(relations);
-    }
 
     const [contacts, total] =
       await this.contactRepository.findAndCount(findOptions);
@@ -136,14 +128,11 @@ export class ContactService {
           deleted: false,
         },
       ],
+      relations,
       skip,
       take: limit,
       order: { [sortBy]: sortOrder.toUpperCase() as 'ASC' | 'DESC' },
     };
-
-    if (relations && relations.length > 0) {
-      findOptions.relations = this.getContactRelations(relations);
-    }
 
     const [contacts, total] =
       await this.contactRepository.findAndCount(findOptions);
@@ -168,11 +157,8 @@ export class ContactService {
   async findOne(id: string, relations?: string[]): Promise<Contact> {
     const findOptions: FindManyOptions<Contact> = {
       where: { id, deleted: false },
+      relations,
     };
-
-    if (relations && relations.length > 0) {
-      findOptions.relations = this.getContactRelations(relations);
-    }
 
     const contact = await this.contactRepository.findOne(findOptions);
 
@@ -181,13 +167,5 @@ export class ContactService {
     }
 
     return contact;
-  }
-
-  /**
-   * Get valid relations for Contact entity
-   * Supports nested relations using dot notation (e.g. 'projects.customFields')
-   */
-  private getContactRelations(relations?: string[]): string[] {
-    return [...this.defaultRelations, ...(relations ?? [])];
   }
 }

@@ -268,8 +268,8 @@ export class Project {
   })
   fitacs: Fitac[];
 
-  @OneToOne(() => ProjectCustom, (customFields) => customFields.project)
-  customFields: ProjectCustom;
+  @OneToOne(() => ProjectCustom, (custom) => custom.project)
+  custom: ProjectCustom;
 
   @ManyToMany(() => Account, (account) => account.projects)
   accounts: Account[];

@@ -125,7 +125,7 @@ export class AccountCustom {
 
   // Relations
   @ApiProperty({ description: 'Associated account', type: () => Account })
-  @OneToOne(() => Account, (account) => account.customFields)
+  @OneToOne(() => Account, (account) => account.custom)
   @JoinColumn({ name: 'id_c' })
   account: Account;
 }
