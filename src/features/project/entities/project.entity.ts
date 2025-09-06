@@ -6,9 +6,9 @@ import {
   JoinTable,
   OneToOne,
 } from 'typeorm';
-import { Fitac } from '../../fitac/entities/fitac.entity';
+import { Fitac } from '@features/fitac/entities/fitac.entity';
 import { ProjectCustom } from './project-custom.entity';
-import { Account } from '../../account/entities/account.entity';
+import { Account } from '@features/account/entities/account.entity';
 
 @Entity({ name: 'proy_proyectostele' })
 export class Project {

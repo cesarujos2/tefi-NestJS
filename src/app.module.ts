@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { getDatabaseConfig } from './config/database.config';
-import { DatabaseModule } from './database/database.module';
-import { FitacModule } from './fitac/fitac.module';
-import { ProjectModule } from './project/project.module';
-import { AccountModule } from './account/account.module';
+import { getDatabaseConfig } from './core/config/database.config';
+import { DatabaseModule } from './core/database/database.module';
+import { FitacModule } from './features/fitac/fitac.module';
+import { ProjectModule } from './features/project/project.module';
+import { AccountModule } from './features/account/account.module';
 
 @Module({
   imports: [

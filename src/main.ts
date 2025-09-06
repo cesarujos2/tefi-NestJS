@@ -1,4 +1,4 @@
-import { AppBootstrapService } from './bootstrap/app-bootstrap.service';
+import { AppBootstrapService } from './core/bootstrap/app-bootstrap.service';
 
 /**
  * Application entry point

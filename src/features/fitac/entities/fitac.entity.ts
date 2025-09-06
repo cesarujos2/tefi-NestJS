@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { FitacCustom } from './fitac-custom.entity';
-import { Project } from '../../project/entities/project.entity';
+import { Project } from '@features/project/entities/project.entity';
 
 @Entity('fitac_fitac')
 export class Fitac {
