@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Fitac } from './entities/fitac.entity';
 import { PaginationDto, PaginatedResponse } from './dto/pagination.dto';
+import { TefiService } from '@shared/services/tefi.service';
 
 @Injectable()
 export class FitacService {
   constructor(
     @InjectRepository(Fitac)
     private readonly fitacRepository: Repository<Fitac>,
+    private readonly tefiService: TefiService,
   ) {}
 
   async findAll(
@@ -45,7 +47,7 @@ export class FitacService {
     };
   }
 
-  async findOne(id: number, relations?: string[]): Promise<Fitac> {
+  async findOne(id: string, relations?: string[]): Promise<Fitac> {
     const fitac = await this.fitacRepository.findOne({
       where: { id, deleted: false },
       relations,
@@ -153,5 +155,35 @@ export class FitacService {
       hasNext: page < totalPages,
       hasPrev: page > 1,
     };
+  }
+
+  /**
+   * Generate PDF for a FITAC record using TEFI service
+   * @param fitacId - FITAC record ID
+   * @param templateId - PDF template ID
+   * @returns Promise<ArrayBuffer> with PDF data
+   */
+  async generatePdf(fitacId: string, templateId: string): Promise<ArrayBuffer> {
+    // Verify that the FITAC record exists
+    const fitac = await this.findOne(fitacId);
+    if (!fitac) {
+      throw new NotFoundException(`FITAC con ID ${fitacId} no encontrado`);
+    }
+
+    try {
+      // Use TEFI service to generate PDF
+      const pdfBuffer = await this.tefiService.generatePdf(
+        String(fitacId),
+        templateId,
+      );
+
+      return pdfBuffer;
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
+      throw new Error(
+        `Error generando PDF para FITAC ${fitacId}: ${errorMessage}`,
+      );
+    }
   }
 }

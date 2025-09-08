@@ -17,7 +17,7 @@ import { Contact } from '@features/contact/entities/contact.entity';
 export class Fitac {
   @ApiProperty({ description: 'ID único del registro' })
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @ApiProperty({ description: 'Fecha de creación del registro' })
   @CreateDateColumn({ name: 'date_entered' })

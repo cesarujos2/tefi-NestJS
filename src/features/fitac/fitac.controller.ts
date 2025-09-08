@@ -1,11 +1,14 @@
 import {
   Controller,
   Get,
+  Post,
   Param,
   Query,
   BadRequestException,
   UseGuards,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { FitacService } from './fitac.service';
 import { Fitac } from './entities/fitac.entity';
 import { PaginationDto, PaginatedResponse } from './dto/pagination.dto';
@@ -239,6 +242,60 @@ export class FitacController {
     );
   }
 
+  @Post(':id/generate-pdf/:templateId')
+  @ApiOperation({
+    summary: 'Generate PDF for a Fitac record',
+    description:
+      'Generate a PDF document for a specific Fitac record using a template',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Fitac record ID',
+    type: 'string',
+  })
+  @ApiParam({
+    name: 'templateId',
+    description: 'Template ID for PDF generation',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'PDF generated successfully',
+    schema: {
+      type: 'string',
+      format: 'binary',
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Fitac record not found',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Error generating PDF',
+  })
+  async generatePdf(
+    @Param('id') id: string,
+    @Param('templateId') templateId: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    try {
+      const pdfBuffer = await this.fitacService.generatePdf(id, templateId);
+
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="fitac-${id}.pdf"`,
+        'Content-Length': pdfBuffer.byteLength.toString(),
+      });
+
+      res.send(Buffer.from(pdfBuffer));
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      throw new BadRequestException(`Error generando PDF: ${errorMessage}`);
+    }
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Get a Fitac record by ID',
@@ -269,13 +326,9 @@ export class FitacController {
     @Param('id') id: string,
     @Query('relations') relations?: string,
   ): Promise<Fitac> {
-    const numericId = parseInt(id, 10);
-    if (isNaN(numericId)) {
-      throw new BadRequestException('ID debe ser un número válido');
-    }
     const relationArray = relations
       ? relations.split(',').map((r) => r.trim())
       : undefined;
-    return this.fitacService.findOne(numericId, relationArray);
+    return this.fitacService.findOne(id, relationArray);
   }
 }
