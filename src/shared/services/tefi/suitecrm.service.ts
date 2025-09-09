@@ -85,7 +85,7 @@ export class SuiteCrmService {
   /**
    * Makes a generic API request to SuiteCRM
    */
-  async makeApiRequest<T extends SuiteCrmResponse>(
+  private async makeApiRequest<T extends SuiteCrmResponse>(
     httpClient: AxiosInstance,
     method: SuiteCrmMethod,
     args: Record<string, unknown>,
