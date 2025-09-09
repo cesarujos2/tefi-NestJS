@@ -8,7 +8,6 @@ import { Contact } from '@features/contact/entities/contact.entity';
 import {
   TefiService,
   TefiConfigService,
-  SuiteCrmService,
   TefiPdfGeneratorService,
 } from '@shared/services/tefi';
 
@@ -21,7 +20,6 @@ import {
     FitacService,
     TefiService,
     TefiConfigService,
-    SuiteCrmService,
     TefiPdfGeneratorService,
   ],
   exports: [FitacService],

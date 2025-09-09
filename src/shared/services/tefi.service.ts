@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import axios, { AxiosInstance } from 'axios';
 import { TefiConfigService } from './tefi/tefi-config.service';
 import { SuiteCrmService } from './tefi/suitecrm.service';
 import { TefiPdfGeneratorService } from './tefi/tefi-pdf-generator.service';
@@ -16,25 +15,15 @@ import {
 @Injectable()
 export class TefiService {
   private readonly logger = new Logger(TefiService.name);
-  private readonly httpClient: AxiosInstance;
   private readonly config: TefiConfig;
+  private readonly suiteCrmService: SuiteCrmService;
 
   constructor(
     private readonly tefiConfigService: TefiConfigService,
-    private readonly suiteCrmService: SuiteCrmService,
     private readonly TefiPdfGeneratorService: TefiPdfGeneratorService,
   ) {
     this.config = this.tefiConfigService.buildConfig();
-    this.httpClient = this.createHttpClient();
-  }
-
-  // HTTP client factory
-  private createHttpClient(): AxiosInstance {
-    return axios.create({
-      baseURL: this.config.url,
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      timeout: 30000,
-    });
+    this.suiteCrmService = new SuiteCrmService(this.config);
   }
 
   /**
@@ -48,7 +37,7 @@ export class TefiService {
 
     try {
       // Ensure authentication
-      await this.suiteCrmService.authenticate(this.httpClient, this.config);
+      await this.suiteCrmService.authenticate();
 
       // Generate PDF using specialized service
       return await this.TefiPdfGeneratorService.generatePdf(
@@ -86,6 +75,6 @@ export class TefiService {
    * Logs out from SuiteCRM
    */
   public async logout(): Promise<void> {
-    await this.suiteCrmService.logout(this.httpClient);
+    await this.suiteCrmService.logout();
   }
 }

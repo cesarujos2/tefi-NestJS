@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { AxiosInstance } from 'axios';
+import { Logger } from '@nestjs/common';
+import axios, { AxiosInstance } from 'axios';
 import {
   SessionToken,
   SuiteCrmMethod,
@@ -12,20 +12,36 @@ import {
 /**
  * Service responsible for SuiteCRM authentication
  * Handles login, logout, and session management
+ * Each instance maintains its own HTTP client and configuration
  */
-@Injectable()
 export class SuiteCrmService {
   private readonly logger = new Logger(SuiteCrmService.name);
   private sessionToken: SessionToken = null;
+  private httpClient: AxiosInstance;
+  private config: TefiConfig;
+
+  constructor(config: TefiConfig) {
+    this.config = config;
+    this.initializeHttpClient();
+  }
+
+  /**
+   * Initializes the HTTP client with base configuration
+   */
+  private initializeHttpClient(): void {
+    this.httpClient = axios.create({
+      baseURL: this.config.url,
+      timeout: 30000,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+  }
 
   /**
    * Authenticates with SuiteCRM
    */
-  async authenticate(
-    httpClient: AxiosInstance,
-    config: TefiConfig,
-    forceRefresh = false,
-  ): Promise<void> {
+  async authenticate(forceRefresh = false): Promise<void> {
     if (this.isAuthenticated() && !forceRefresh) {
       return;
     }
@@ -35,15 +51,14 @@ export class SuiteCrmService {
 
       const loginData = {
         user_auth: {
-          user_name: config.username,
-          password: config.password,
+          user_name: this.config.username,
+          password: this.config.password,
         },
         application_name: 'TEFI NestJS Client',
         name_value_list: {},
       };
 
       const response = await this.makeApiRequest<LoginResponse>(
-        httpClient,
         'login',
         loginData,
       );
@@ -64,13 +79,13 @@ export class SuiteCrmService {
   /**
    * Logs out from SuiteCRM
    */
-  async logout(httpClient: AxiosInstance): Promise<void> {
+  async logout(): Promise<void> {
     if (!this.isAuthenticated()) {
       return;
     }
 
     try {
-      await this.makeApiRequest(httpClient, 'logout', {
+      await this.makeApiRequest('logout', {
         session: this.sessionToken,
       });
       this.sessionToken = null;
@@ -86,7 +101,6 @@ export class SuiteCrmService {
    * Makes a generic API request to SuiteCRM
    */
   private async makeApiRequest<T extends SuiteCrmResponse>(
-    httpClient: AxiosInstance,
     method: SuiteCrmMethod,
     args: Record<string, unknown>,
   ): Promise<T> {
@@ -94,7 +108,7 @@ export class SuiteCrmService {
 
     try {
       this.logger.debug(`SuiteCRM API call: ${method}`);
-      const response = await httpClient.post(
+      const response = await this.httpClient.post(
         '/service/v4_1/rest.php',
         requestData,
       );
